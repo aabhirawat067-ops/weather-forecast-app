@@ -379,5 +379,8 @@ function App() {
     </div>
   );
 }
+<p className="made-by">
+  Made by <strong>Abhishek Rawat</strong>
+</p>
 
 export default App;

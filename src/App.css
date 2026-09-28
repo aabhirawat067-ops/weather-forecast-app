@@ -334,3 +334,13 @@ h1 {
 .search-box button:active {
   transform: scale(0.97);
 }
+.made-by {
+  margin-top: 25px;
+  text-align: center;
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+.made-by strong {
+  font-weight: 600;
+}
