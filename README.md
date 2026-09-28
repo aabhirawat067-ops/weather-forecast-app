@@ -1,16 +1,86 @@
-# React + Vite
+# 🌤️ Weather Forecast App
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+<p align="center">
+  <b>A modern, responsive weather application built with React + Vite</b>
+</p>
 
-Currently, two official plugins are available:
+<p align="center">
+  🌍 Search Cities &nbsp; • &nbsp; 📍 Current Location &nbsp; • &nbsp; 📅 7-Day Forecast &nbsp; • &nbsp; 🌙 Dark Mode
+</p>
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## 🚀 Live Demo
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+<p align="center">
 
-## Expanding the Oxlint configuration
+### 🌐 [OPEN WEATHER FORECAST APP](https://aabhirawat067-ops.github.io/weather-forecast-app/)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+</p>
+
+---
+
+## ✨ Features
+
+* 🌍 **City Weather Search** — Search weather for any city
+* 📍 **Current Location** — Get weather using your device location
+* 🌡️ **Current Temperature** — View real-time temperature
+* 💧 **Humidity** — Check current humidity levels
+* 💨 **Wind Speed** — View current wind speed
+* 🌡️ **Feels Like** — See the apparent temperature
+* 📅 **7-Day Forecast** — Check upcoming weather conditions
+* 🗓️ **Day Names** — Easy-to-read daily forecast
+* 🌙 **Dark / Light Mode** — Switch between themes
+* 📱 **Responsive Design** — Works smoothly on mobile and desktop
+* ⚡ **Fast Performance** — Powered by Vite
+* 🌐 **GitHub Pages Deployment** — Automatically deployed using GitHub Actions
+
+---
+
+## 🛠️ Tech Stack
+
+| Technology         | Purpose                     |
+| ------------------ | --------------------------- |
+| ⚛️ React           | Frontend UI                 |
+| ⚡ Vite             | Development & Build Tool    |
+| 🟨 JavaScript      | Application Logic           |
+| 🎨 CSS             | Styling & Responsive Design |
+| 🌤️ Open-Meteo API | Weather Data                |
+| 🚀 GitHub Pages    | Hosting                     |
+| ⚙️ GitHub Actions  | Deployment                  |
+
+---
+
+
+---
+
+## 📸 Project Highlights
+
+### 🌦️ Weather Information
+
+Search for a city and get current weather information including:
+
+**Temperature • Humidity • Wind Speed • Feels Like • Weather Condition**
+
+### 📅 7-Day Forecast
+
+View upcoming weather conditions with daily:
+
+**Weather Condition • Maximum Temperature • Minimum Temperature**
+
+### 🌙 Dark Mode
+
+Switch between a clean light theme and a comfortable dark theme.
+
+---
+
+
+
+
+<p align="center">
+  🌤️ <b>Search a city. Check the weather. Plan your day.</b> 🌤️
+</p>
+
+<p align="center">
+  Made with ❤️ using React + Vite
+</p>
