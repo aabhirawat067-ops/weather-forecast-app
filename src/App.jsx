@@ -1,23 +1,38 @@
 import { useEffect, useState } from "react";
 import "./App.css";
+
 function getDayName(date) {
   return new Date(date).toLocaleDateString("en-US", {
     weekday: "short",
   });
 }
 
+function getWeatherDescription(code) {
+  if (code === 0) return "Clear Sky ☀️";
+  if (code <= 3) return "Partly Cloudy 🌤️";
+  if (code <= 48) return "Foggy 🌫️";
+  if (code <= 67) return "Rainy 🌧️";
+  if (code <= 77) return "Snowy ❄️";
+  if (code <= 82) return "Rain Showers 🌦️";
+  if (code <= 86) return "Snow Showers 🌨️";
+  if (code >= 95) return "Thunderstorm ⛈️";
+
+  return "Unknown Weather";
+}
+
 function App() {
   const [darkMode, setDarkMode] = useState(() => {
-  return localStorage.getItem("darkMode") === "true";
-});
+    return localStorage.getItem("darkMode") === "true";
+  });
 
-useEffect(() => {
-  localStorage.setItem("darkMode", darkMode);
-}, [darkMode]);
   const [city, setCity] = useState("");
   const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    localStorage.setItem("darkMode", darkMode);
+  }, [darkMode]);
 
   async function getWeather() {
     if (!city.trim()) {
@@ -30,7 +45,6 @@ useEffect(() => {
     setWeather(null);
 
     try {
-      // Find city
       const geoUrl = new URL(
         "https://geocoding-api.open-meteo.com/v1/search"
       );
@@ -43,156 +57,203 @@ useEffect(() => {
       const geoResponse = await fetch(geoUrl);
       const geoData = await geoResponse.json();
 
-      if (!geoData.results || geoData.results.length === 0) {
+      if (!geoData.results?.length) {
         setError("City not found. Try another city.");
         return;
       }
 
-      
-      // Get weather
       const location = geoData.results[0];
+
       const weatherUrl = new URL(
         "https://api.open-meteo.com/v1/forecast"
       );
 
       weatherUrl.searchParams.set("latitude", location.latitude);
       weatherUrl.searchParams.set("longitude", location.longitude);
-weatherUrl.searchParams.set(
-  "daily",
-  "weather_code,temperature_2m_max,temperature_2m_min"
-);
 
-weatherUrl.searchParams.set("timezone", "auto");
       weatherUrl.searchParams.set(
         "current",
-        "temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m,weather_code"
+        "temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m"
       );
 
+      weatherUrl.searchParams.set(
+        "daily",
+        "weather_code,temperature_2m_max,temperature_2m_min"
+      );
+
+      weatherUrl.searchParams.set("timezone", "auto");
       weatherUrl.searchParams.set("temperature_unit", "celsius");
       weatherUrl.searchParams.set("wind_speed_unit", "kmh");
 
-      const weatherResponse = await fetch(weatherUrl);
-      const weatherData = await weatherResponse.json();
-
-      const current = weatherData.current;
+      const response = await fetch(weatherUrl);
+      const data = await response.json();
 
       setWeather({
         city: location.name,
         country: location.country,
-        temperature: current.temperature_2m,
-        humidity: current.relative_humidity_2m,
-        feelsLike: current.apparent_temperature,
-        wind: current.wind_speed_10m,
-        description: getWeatherDescription(current.weather_code),
-        forecast: weatherData.daily,
+        temperature: data.current.temperature_2m,
+        humidity: data.current.relative_humidity_2m,
+        feelsLike: data.current.apparent_temperature,
+        wind: data.current.wind_speed_10m,
+        description: getWeatherDescription(
+          data.current.weather_code
+        ),
+        forecast: data.daily,
       });
     } catch (err) {
+      console.error(err);
       setError("Unable to fetch weather. Please try again.");
     } finally {
       setLoading(false);
     }
   }
-  const getCurrentLocation = () => {
-  if (!navigator.geolocation) {
-    setError("Geolocation is not supported by your browser");
-    return;
-  }
 
-  setLoading(true);
-  setError("");
+  function getCurrentLocation() {
+    setError("");
+    setWeather(null);
 
-  navigator.geolocation.getCurrentPosition(
-    async (position) => {
-      const { latitude, longitude } = position.coords;
-
-      try {
-        const url = new URL(
-          "https://api.open-meteo.com/v1/forecast"
-        );
-
-        url.searchParams.set("latitude", latitude);
-        url.searchParams.set("longitude", longitude);
-
-        url.searchParams.set(
-          "current",
-          "temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m"
-        );
-
-        url.searchParams.set(
-          "daily",
-          "weather_code,temperature_2m_max,temperature_2m_min"
-        );
-
-        url.searchParams.set("timezone", "auto");
-
-        const response = await fetch(url);
-        const data = await response.json();
-
-        setWeather({
-          city: "Current Location",
-          country: "",
-          temperature: data.current.temperature_2m,
-          humidity: data.current.relative_humidity_2m,
-          feelsLike: data.current.apparent_temperature,
-          wind: data.current.wind_speed_10m,
-          description: getWeatherDescription(
-            data.current.weather_code
-          ),
-          forecast: {
-            time: data.daily.time,
-            weather_code: data.daily.weather_code,
-            temperature_2m_max: data.daily.temperature_2m_max,
-            temperature_2m_min: data.daily.temperature_2m_min,
-          },
-        });
-      } catch (err) {
-        setError("Unable to get current location weather");
-      } finally {
-        setLoading(false);
-      }
-    },
-    () => {
-      setLoading(false);
-      setError("Please allow location access");
+    if (!navigator.geolocation) {
+      setError("Geolocation is not supported by this browser.");
+      return;
     }
-  );
-};
 
-  function getWeatherDescription(code) {
-    if (code === 0) return "Clear Sky ☀️";
-    if (code <= 3) return "Partly Cloudy 🌤️";
-    if (code <= 48) return "Foggy 🌫️";
-    if (code <= 67) return "Rainy 🌧️";
-    if (code <= 77) return "Snowy ❄️";
-    if (code <= 82) return "Rain Showers 🌦️";
-    if (code <= 86) return "Snow Showers 🌨️";
-    if (code >= 95) return "Thunderstorm ⛈️";
+    setLoading(true);
 
-    return "Unknown Weather";
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const { latitude, longitude } = position.coords;
+
+          console.log("Latitude:", latitude);
+          console.log("Longitude:", longitude);
+
+          // Reverse geocoding
+          const locationResponse = await fetch(
+            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
+          );
+
+          if (!locationResponse.ok) {
+            throw new Error("City detection failed");
+          }
+
+          const locationData = await locationResponse.json();
+
+          const detectedCity =
+            locationData.city ||
+            locationData.locality ||
+            locationData.principalSubdivision ||
+            "Current Location";
+
+          const detectedCountry =
+            locationData.countryName || "";
+
+          console.log("Detected city:", detectedCity);
+
+          // Weather
+          const weatherUrl = new URL(
+            "https://api.open-meteo.com/v1/forecast"
+          );
+
+          weatherUrl.searchParams.set("latitude", latitude);
+          weatherUrl.searchParams.set("longitude", longitude);
+
+          weatherUrl.searchParams.set(
+            "current",
+            "temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m"
+          );
+
+          weatherUrl.searchParams.set(
+            "daily",
+            "weather_code,temperature_2m_max,temperature_2m_min"
+          );
+
+          weatherUrl.searchParams.set("timezone", "auto");
+          weatherUrl.searchParams.set("temperature_unit", "celsius");
+          weatherUrl.searchParams.set("wind_speed_unit", "kmh");
+
+          const weatherResponse = await fetch(weatherUrl);
+
+          if (!weatherResponse.ok) {
+            throw new Error("Weather request failed");
+          }
+
+          const data = await weatherResponse.json();
+
+          setWeather({
+            city: detectedCity,
+            country: detectedCountry,
+            temperature: data.current.temperature_2m,
+            humidity: data.current.relative_humidity_2m,
+            feelsLike: data.current.apparent_temperature,
+            wind: data.current.wind_speed_10m,
+            description: getWeatherDescription(
+              data.current.weather_code
+            ),
+            forecast: data.daily,
+          });
+
+          setCity(detectedCity);
+        } catch (err) {
+          console.error(err);
+          setError(
+            "Location detected, but city name could not be found."
+          );
+        } finally {
+          setLoading(false);
+        }
+      },
+
+      (geoError) => {
+        console.error("Geolocation error:", geoError);
+
+        setLoading(false);
+
+        if (geoError.code === 1) {
+          setError(
+            "Location permission denied. Please allow location access for this website."
+          );
+        } else if (geoError.code === 2) {
+          setError(
+            "Location unavailable. Turn ON your phone GPS/location and try again."
+          );
+        } else if (geoError.code === 3) {
+          setError(
+            "Location request timed out. Please try again."
+          );
+        } else {
+          setError(
+            "Unable to detect your location."
+          );
+        }
+      },
+
+      {
+        enableHighAccuracy: false,
+        timeout: 20000,
+        maximumAge: 60000,
+      }
+    );
   }
 
   return (
-    <div
-  className={
-    "app " +
-    (darkMode ? "dark " : "light ") +
-    (weather ? weather.description.toLowerCase().replaceAll(" ", "-") : "")
-  }
->
+    <div className={"app " + (darkMode ? "dark" : "light")}>
       <div className="weather-card">
+
         <h1>🌤️ Weather App</h1>
+
         <button
-  className="theme-toggle"
-  onClick={() => setDarkMode(!darkMode)}
->
-  {darkMode ? "☀️" : "🌙"}
-</button>
+          className="theme-toggle"
+          onClick={() => setDarkMode(!darkMode)}
+        >
+          {darkMode ? "☀️" : "🌙"}
+        </button>
 
         <p className="subtitle">
           Check the weather anywhere
         </p>
 
         <div className="search-box">
+
           <input
             type="text"
             placeholder="Enter city name..."
@@ -208,80 +269,115 @@ weatherUrl.searchParams.set("timezone", "auto");
           <button onClick={getWeather}>
             {loading ? "..." : "Search"}
           </button>
+
           <button onClick={getCurrentLocation}>
-  📍 My Location
-</button>
+            📍 My Location
+          </button>
+
         </div>
 
-        {error && <p className="error">{error}</p>}
+        {error && (
+          <p className="error">
+            {error}
+          </p>
+        )}
 
         {weather && (
-  <div className="weather-info">
-    <h2>
-      📍 {weather.city}, {weather.country}
-    </h2>
+          <div className="weather-info">
 
-    <div className="temperature">
-      {Math.round(weather.temperature)}°C
-    </div>
+            <h2>
+              📍 {weather.city}
+              {weather.country && `, ${weather.country}`}
+            </h2>
 
-    <p>{weather.description}</p>
+            <div className="temperature">
+              {Math.round(weather.temperature)}°C
+            </div>
 
-    <div className="details">
-      <div>
-        <span>💧</span>
-        <p>Humidity</p>
-        <strong>{weather.humidity}%</strong>
-      </div>
+            <p>
+              {weather.description}
+            </p>
 
-      <div>
-        <span>💨</span>
-        <p>Wind</p>
-        <strong>{weather.wind} km/h</strong>
-      </div>
+            <div className="details">
 
-      <div>
-        <span>🌡️</span>
-        <p>Feels Like</p>
-        <strong>
-          {Math.round(weather.feelsLike)}°C
-        </strong>
-      </div>
-    </div>
+              <div>
+                <span>💧</span>
+                <p>Humidity</p>
+                <strong>
+                  {weather.humidity}%
+                </strong>
+              </div>
 
-    <div className="forecast">
-      <h3>7-Day Forecast</h3>
+              <div>
+                <span>💨</span>
+                <p>Wind</p>
+                <strong>
+                  {weather.wind} km/h
+                </strong>
+              </div>
 
-      <div className="forecast-list">
-        {weather.forecast.time.map((date, index) => (
-          <div className="forecast-day" key={date}>
-            <p>{getDayName(date)}</p>
+              <div>
+                <span>🌡️</span>
+                <p>Feels Like</p>
+                <strong>
+                  {Math.round(weather.feelsLike)}°C
+                </strong>
+              </div>
 
-            <span>
-              {getWeatherDescription(
-                weather.forecast.weather_code[index]
-              )}
-            </span>
+            </div>
 
-            <strong>
-              {Math.round(
-                weather.forecast.temperature_2m_max[index]
-              )}° /
-              {Math.round(
-                weather.forecast.temperature_2m_min[index]
-              )}°
-            </strong>
+            <div className="forecast">
+
+              <h3>7-Day Forecast</h3>
+
+              <div className="forecast-list">
+
+                {weather.forecast.time.map(
+                  (date, index) => (
+
+                    <div
+                      className="forecast-day"
+                      key={date}
+                    >
+
+                      <p>
+                        {getDayName(date)}
+                      </p>
+
+                      <span>
+                        {getWeatherDescription(
+                          weather.forecast.weather_code[index]
+                        )}
+                      </span>
+
+                      <strong>
+                        {Math.round(
+                          weather.forecast
+                            .temperature_2m_max[index]
+                        )}
+                        ° /
+                        {Math.round(
+                          weather.forecast
+                            .temperature_2m_min[index]
+                        )}
+                        °
+                      </strong>
+
+                    </div>
+
+                  )
+                )}
+
+              </div>
+
+            </div>
+
           </div>
-        ))}
-      </div>
-    </div>
-  </div>
         )}
+
       </div>
     </div>
   );
 }
-  
-
 
 export default App;
