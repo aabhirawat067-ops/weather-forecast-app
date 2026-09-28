@@ -51,13 +51,6 @@
 
 ---
 
-## 💻 Source Code
-
-<p align="center">
-
-### 📂 [VIEW SOURCE CODE ON GITHUB →](https://github.com/aabhirawat067-ops/weather-forecast-app)
-
-</p>
 
 ---
 
