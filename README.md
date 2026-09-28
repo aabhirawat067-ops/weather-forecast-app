@@ -76,15 +76,6 @@ Switch between a clean light theme and a comfortable dark theme.
 
 
 
-## 🌐 Deployment
-
-This project is deployed using:
-
-**GitHub Pages + GitHub Actions**
-
-Every update pushed to the `main` branch can be automatically built and deployed.
-
----
 
 <p align="center">
   🌤️ <b>Search a city. Check the weather. Plan your day.</b> 🌤️
