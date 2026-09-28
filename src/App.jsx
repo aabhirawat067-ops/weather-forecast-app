@@ -375,12 +375,17 @@ function App() {
           </div>
         )}
 
+      
+  
+  </div>
+
+      <div className="made-by">
+        Made by <strong>Abhishek Rawat</strong>
       </div>
     </div>
   );
 }
-<p className="made-by">
-  Made by <strong>Abhishek Rawat</strong>
-</p>
 
 export default App;
+  
+  

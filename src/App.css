@@ -335,10 +335,13 @@ h1 {
   transform: scale(0.97);
 }
 .made-by {
-  margin-top: 25px;
+  width: 100%;
   text-align: center;
+  margin-top: 30px;
+  padding-top: 15px;
   font-size: 14px;
   opacity: 0.7;
+  border-top: 1px solid rgba(128, 128, 128, 0.25);
 }
 
 .made-by strong {
