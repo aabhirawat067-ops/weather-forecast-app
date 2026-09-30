@@ -68,9 +68,7 @@ View upcoming weather conditions with daily:
 
 **Weather Condition • Maximum Temperature • Minimum Temperature**
 
-### 🌙 Dark Mode
 
-Switch between a clean light theme and a comfortable dark theme.
 
 ---
 
@@ -82,5 +80,5 @@ Switch between a clean light theme and a comfortable dark theme.
 </p>
 
 <p align="center">
-  Made with ❤️ using React + Vite
+
 </p>
